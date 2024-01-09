@@ -35,94 +35,93 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Task Feedback'),
-        automaticallyImplyLeading: false, // This will remove the back button
 
-      ),
       body: SingleChildScrollView(
         child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              TextField(
-                controller: nameController,
-                decoration: InputDecoration(labelText: 'Your Name'),
-              ),
-              SizedBox(height: 16),
-              TextField(
-                controller: emailController,
-                decoration: InputDecoration(labelText: 'Your Email'),
-                keyboardType: TextInputType.emailAddress,
-              ),
-              SizedBox(height: 16),
-              TextField(
-                controller: feedbackController,
-                decoration: InputDecoration(
-                  labelText: 'Feedback',
-
-                  alignLabelWithHint: true, // Align label text with the start
+          padding: EdgeInsets.symmetric(horizontal: 18),
+          child: Padding(
+            padding: const EdgeInsets.only(top: 100.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                TextField(
+                  controller: nameController,
+                  decoration: InputDecoration(labelText: 'Your Name'),
                 ),
-                maxLines: 3,
-              ),
-              SizedBox(height: 5),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text('Responsiveness Rating:'),
-                  Slider(
-                    value: responsivenessRating,
-                    min: 1.0,
-                    max: 5.0,
-                    divisions: 4,
-                    onChanged: (value) {
-                      setState(() {
-                        responsivenessRating = value;
-                      });
-                    },
-                    label: responsivenessRating.toString(),
+                SizedBox(height: 16),
+                TextField(
+                  controller: emailController,
+                  decoration: InputDecoration(labelText: 'Your Email'),
+                  keyboardType: TextInputType.emailAddress,
+                ),
+                SizedBox(height: 16),
+                TextField(
+                  controller: feedbackController,
+                  decoration: InputDecoration(
+                    labelText: 'Feedback',
+
+                    alignLabelWithHint: true, // Align label text with the start
                   ),
-                ],
-              ),
-              SizedBox(height: 16),
-              ElevatedButton(
-                onPressed: () async {
-                  try {
-                    // Save feedback to Firestore
-                    await feedbackCollection.add({
-                      'name': nameController.text,
-                      'email': emailController.text,
-                      'feedback': feedbackController.text,
-                      'responsivenessRating': responsivenessRating,
-                    });
+                  maxLines: 3,
+                ),
+                SizedBox(height: 25),
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    Text('Responsiveness Rating:'),
+                    Slider(
+                      value: responsivenessRating,
+                      min: 1.0,
+                      max: 5.0,
+                      divisions: 4,
+                      onChanged: (value) {
+                        setState(() {
+                          responsivenessRating = value;
+                        });
+                      },
+                      label: responsivenessRating.toString(),
+                    ),
+                  ],
+                ),
+                SizedBox(height: 16),
+                ElevatedButton(
+                  onPressed: () async {
+                    try {
+                      // Save feedback to Firestore
+                      await feedbackCollection.add({
+                        'name': nameController.text,
+                        'email': emailController.text,
+                        'feedback': feedbackController.text,
+                        'responsivenessRating': responsivenessRating,
+                      });
 
-                    // Reset text controllers and rating
-                    nameController.clear();
-                    emailController.clear();
-                    feedbackController.clear();
-                    setState(() {
-                      responsivenessRating = 3.0; // Reset to default rating
-                    });
+                      // Reset text controllers and rating
+                      nameController.clear();
+                      emailController.clear();
+                      feedbackController.clear();
+                      setState(() {
+                        responsivenessRating = 3.0; // Reset to default rating
+                      });
 
-                    // Display a success message
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text('Feedback submitted successfully'),
-                      ),
-                    );
-                  } catch (error) {
-                    // Display an error message
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text('Error occurred. Please try again.'),
-                      ),
-                    );
-                  }
-                },
-                child: Text('Submit Feedback'),
-              ),
-            ],
+                      // Display a success message
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text('Feedback submitted successfully'),
+                        ),
+                      );
+                    } catch (error) {
+                      // Display an error message
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text('Error occurred. Please try again.'),
+                        ),
+                      );
+                    }
+                  },
+                  child: Text('Submit Feedback'),
+                ),
+              ],
+            ),
           ),
         ),
       ),

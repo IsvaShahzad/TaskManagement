@@ -84,12 +84,18 @@ class LoginScreen extends StatelessWidget {
   final String role;
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
+  final TextEditingController mobileController = TextEditingController();
+
 
   LoginScreen({required this.role});
 
   Future<void> _login(BuildContext context) async {
     try {
       FirebaseAuth _auth = FirebaseAuth.instance;
+
+
+
+
       UserCredential authResult = await _auth.signInWithEmailAndPassword(
         email: emailController.text,
         password: passwordController.text,
@@ -142,9 +148,7 @@ class LoginScreen extends StatelessWidget {
     }
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Login'),
-      ),
+
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -160,6 +164,11 @@ class LoginScreen extends StatelessWidget {
               controller: passwordController,
               decoration: InputDecoration(labelText: 'Password'),
               obscureText: true,
+            ),
+            SizedBox(height: 16),
+            TextField(
+              controller: mobileController,
+              decoration: InputDecoration(labelText: 'Mobile'),
             ),
             SizedBox(height: 16),
             ElevatedButton(
@@ -190,6 +199,8 @@ class SignUpScreen extends StatefulWidget {
 class _SignUpScreenState extends State<SignUpScreen> {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
+  final TextEditingController mobileController = TextEditingController();
+
 
   Future<void> _signUp(BuildContext context) async {
     try {
@@ -203,6 +214,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
         'email': emailController.text,
         'role': widget.role,
         'password': passwordController.text,
+        'mobile':mobileController.text,
       });
 
       print('Successfully signed up as ${widget.role}');
@@ -248,6 +260,12 @@ class _SignUpScreenState extends State<SignUpScreen> {
             TextField(
               controller: passwordController,
               decoration: InputDecoration(labelText: 'Password'),
+              obscureText: true,
+            ),
+            SizedBox(height: 16),
+            TextField(
+              controller: mobileController,
+              decoration: InputDecoration(labelText: 'Mobile'),
               obscureText: true,
             ),
             SizedBox(height: 16),

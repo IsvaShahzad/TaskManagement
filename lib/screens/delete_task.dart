@@ -4,12 +4,13 @@ import 'package:dropdown_search/dropdown_search.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_email_sender/flutter_email_sender.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:mailer/mailer.dart';
+import 'package:mailer/smtp_server/gmail.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -37,10 +38,16 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 }
 
+
+
+
 class DeleteTaskScreen extends StatefulWidget {
   const DeleteTaskScreen({
     super.key,
   });
+
+
+
 
   @override
   State<DeleteTaskScreen> createState() => _MyHomePageState();
@@ -60,7 +67,7 @@ class _MyHomePageState extends State<DeleteTaskScreen> {
 
   getData() async {
     CollectionReference collection =
-        FirebaseFirestore.instance.collection('Tasks');
+    FirebaseFirestore.instance.collection('Tasks');
 
     // Retrieve user role
     User? user = FirebaseAuth.instance.currentUser;
@@ -81,7 +88,7 @@ class _MyHomePageState extends State<DeleteTaskScreen> {
 
     for (var element in snapshot.docs) {
       Map<String, dynamic>? documentData =
-          element.data() as Map<String, dynamic>?;
+      element.data() as Map<String, dynamic>?;
 
       if (documentData != null && documentData.containsKey('AddedTasks')) {
         addedTask = documentData['AddedTasks'];
@@ -98,17 +105,45 @@ class _MyHomePageState extends State<DeleteTaskScreen> {
     return allData;
   }
 
-  Widget _customPopupItemBuilderExample2(
-      BuildContext context, String item, bool isSelected) {
+  Future<void> sendEmail() async {
+    final User? user = FirebaseAuth.instance.currentUser;
+
+    if (user != null) {
+      final smtpServer = gmail('isvashaz@gmail.com', 'ncsq nugn gdof vdim');
+
+      final message = Message()
+        ..from = Address('isvashaz@gmail.com', 'Isva')
+        ..recipients.add(user.email!) // Use the user's email
+        ..subject = 'Task Updated!'
+        ..text = '''
+       
+      ''';
+
+      try {
+        final sendReport = await send(message, smtpServer);
+        print('Message sent: ' + sendReport.toString());
+      } catch (e) {
+        print('Error sending email: $e');
+      }
+    } else {
+      print('User is not logged in');
+    }
+  }
+
+
+  Widget _customPopupItemBuilderExample2(BuildContext context, String item,
+      bool isSelected) {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 8),
       decoration: !isSelected
           ? null
           : BoxDecoration(
-              border: Border.all(color: Theme.of(context).primaryColor),
-              borderRadius: BorderRadius.circular(5),
-              color: Colors.white,
-            ),
+        border: Border.all(color: Theme
+            .of(context)
+            .primaryColor),
+        borderRadius: BorderRadius.circular(5),
+        color: Colors.white,
+      ),
       child: ListTile(
         selected: isSelected,
         title: Text(item),
@@ -122,255 +157,258 @@ class _MyHomePageState extends State<DeleteTaskScreen> {
         backgroundColor: Colors.white,
         body: Container(
             child: Padding(
-          padding:
+              padding:
               const EdgeInsets.only(top: 20), // Add your desired spacing here
-          child: FutureBuilder(
-            builder: (BuildContext context, AsyncSnapshot snapshot) {
-              if (snapshot.data == null) {
-                return const Center(
-                    child: CircularProgressIndicator(
-                  valueColor: AlwaysStoppedAnimation(Colors.black54),
-                ));
-              } else {
-                return ListView(
-                  children: [
-                    Stack(
-                      alignment: Alignment.topCenter,
-                      children: <Widget>[
-                        Padding(
-                          padding: const EdgeInsets.all(9),
-                          child: DecoratedBox(
-                            decoration: BoxDecoration(
-                              color: Colors.grey[200], // Grey color
-                              borderRadius: BorderRadius.circular(9.0),
-                            ),
-                            child: TextField(
-                              enabled: false,
-                              readOnly: true,
-                              decoration: InputDecoration(
-                                border: OutlineInputBorder(
+              child: FutureBuilder(
+                builder: (BuildContext context, AsyncSnapshot snapshot) {
+                  if (snapshot.data == null) {
+                    return const Center(
+                        child: CircularProgressIndicator(
+                          valueColor: AlwaysStoppedAnimation(Colors.black54),
+                        ));
+                  } else {
+                    return ListView(
+                      children: [
+                        Stack(
+                          alignment: Alignment.topCenter,
+                          children: <Widget>[
+                            Padding(
+                              padding: const EdgeInsets.all(9),
+                              child: DecoratedBox(
+                                decoration: BoxDecoration(
+                                  color: Colors.grey[200], // Grey color
                                   borderRadius: BorderRadius.circular(9.0),
                                 ),
-                                filled: true,
-                                enabledBorder: OutlineInputBorder(
-                                  borderSide: const BorderSide(
-                                      color: Colors.black12, width: 0.0),
-                                  borderRadius: BorderRadius.circular(9.0),
-                                ),
-                                fillColor: Colors.grey[200], // Grey color
-                                floatingLabelBehavior:
+                                child: TextField(
+                                  enabled: false,
+                                  readOnly: true,
+                                  decoration: InputDecoration(
+                                    border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(9.0),
+                                    ),
+                                    filled: true,
+                                    enabledBorder: OutlineInputBorder(
+                                      borderSide: const BorderSide(
+                                          color: Colors.black12, width: 0.0),
+                                      borderRadius: BorderRadius.circular(9.0),
+                                    ),
+                                    fillColor: Colors.grey[200],
+                                    // Grey color
+                                    floatingLabelBehavior:
                                     FloatingLabelBehavior.always,
-                              ),
-                            ),
-                          ),
-                        ),
-                        Container(
-                          padding: const EdgeInsets.only(
-                              top: 15, left: 20, right: 8, bottom: 8),
-                          child: DropdownSearch<String>(
-                            dropdownDecoratorProps:
-                                const DropDownDecoratorProps(
-                              dropdownSearchDecoration: InputDecoration(
-                                border: InputBorder.none,
-                                hintText: 'Search Event by Name',
-                                fillColor: Colors.grey, // Grey color
-                                hintStyle: TextStyle(color: Colors.grey),
-                              ),
-                            ),
-                            items: lis3,
-                            compareFn: (i, s) => i == s,
-                            selectedItem: selectedShop,
-                            onChanged: (value) {
-                              selectedShop = value!;
-                              setState(() {});
-                            },
-                            popupProps: PopupPropsMultiSelection.dialog(
-                              isFilterOnline: true,
-                              showSelectedItems: true,
-                              searchFieldProps: const TextFieldProps(
-                                decoration: InputDecoration(
-                                  labelText: 'Search',
-                                  prefixIcon: Icon(Icons.search),
+                                  ),
                                 ),
                               ),
-                              showSearchBox: true,
-                              itemBuilder: _customPopupItemBuilderExample2,
                             ),
-                          ),
-                        ),
-                      ],
-                    ),
-                    uploading
-                        ? Container(
-                            alignment: Alignment.center,
-                            padding: const EdgeInsets.only(top: 12),
-                            child: const CircularProgressIndicator(
-                              valueColor:
-                                  AlwaysStoppedAnimation(Colors.black54),
-                            ),
-                          )
-                        : const Text(''),
-                    Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 4),
-                      child: ListView.builder(
-                        shrinkWrap: true,
-                        physics: const NeverScrollableScrollPhysics(),
-                        itemBuilder: (context, index) {
-                          if (selectedShop != "Select Event") {
-                            if (addedTask[index]["title"] != selectedShop) {
-                              return const SizedBox(height: 0);
-                            } else {
-                              return GestureDetector(
-                                onTap: () async {
-                                  setState(() {
-                                    selectedTaskIndex = index;
-                                  });
-
-                                  await _showDeleteDialog(
-                                      addedTask[index]["title"]);
+                            Container(
+                              padding: const EdgeInsets.only(
+                                  top: 15, left: 20, right: 8, bottom: 8),
+                              child: DropdownSearch<String>(
+                                dropdownDecoratorProps:
+                                const DropDownDecoratorProps(
+                                  dropdownSearchDecoration: InputDecoration(
+                                    border: InputBorder.none,
+                                    hintText: 'Search Event by Name',
+                                    fillColor: Colors.grey, // Grey color
+                                    hintStyle: TextStyle(color: Colors.grey),
+                                  ),
+                                ),
+                                items: lis3,
+                                compareFn: (i, s) => i == s,
+                                selectedItem: selectedShop,
+                                onChanged: (value) {
+                                  selectedShop = value!;
+                                  setState(() {});
                                 },
-                                child: Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                      vertical: 8, horizontal: 10),
-                                  child: Card(
-                                    color: Colors.grey[200],
+                                popupProps: PopupPropsMultiSelection.dialog(
+                                  isFilterOnline: true,
+                                  showSelectedItems: true,
+                                  searchFieldProps: const TextFieldProps(
+                                    decoration: InputDecoration(
+                                      labelText: 'Search',
+                                      prefixIcon: Icon(Icons.search),
+                                    ),
+                                  ),
+                                  showSearchBox: true,
+                                  itemBuilder: _customPopupItemBuilderExample2,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        uploading
+                            ? Container(
+                          alignment: Alignment.center,
+                          padding: const EdgeInsets.only(top: 12),
+                          child: const CircularProgressIndicator(
+                            valueColor:
+                            AlwaysStoppedAnimation(Colors.black54),
+                          ),
+                        )
+                            : const Text(''),
+                        Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 4),
+                          child: ListView.builder(
+                            shrinkWrap: true,
+                            physics: const NeverScrollableScrollPhysics(),
+                            itemBuilder: (context, index) {
+                              if (selectedShop != "Select Event") {
+                                if (addedTask[index]["title"] != selectedShop) {
+                                  return const SizedBox(height: 0);
+                                } else {
+                                  return GestureDetector(
+                                    onTap: () async {
+                                      setState(() {
+                                        selectedTaskIndex = index;
+                                      });
+
+                                      await _showDeleteDialog(
+                                          addedTask[index]["title"]);
+                                    },
                                     child: Padding(
-                                      padding: const EdgeInsets.all(10),
-                                      child: Column(
-                                        crossAxisAlignment:
+                                      padding: const EdgeInsets.symmetric(
+                                          vertical: 8, horizontal: 10),
+                                      child: Card(
+                                        color: Colors.grey[200],
+                                        child: Padding(
+                                          padding: const EdgeInsets.all(10),
+                                          child: Column(
+                                            crossAxisAlignment:
                                             CrossAxisAlignment.start,
-                                        children: <Widget>[
-                                          Text(
-                                            "Title: ${addedTask[index]["title"]}",
-                                            style: TextStyle(
-                                              color: Colors.grey[700],
-                                              fontSize: 16,
-                                              fontWeight: FontWeight.bold,
-                                            ),
-                                          ),
-                                          SizedBox(height: 8),
-                                          Text(
-                                            "Description: ${addedTask[index]["description"]}",
-                                            style: TextStyle(
-                                              color: Colors.grey[700],
-                                              fontSize: 13,
-                                            ),
-                                          ),
-                                          SizedBox(height: 4),
-                                          Text(
-                                            "Status: ${addedTask[index]["status"]}",
-                                            style: TextStyle(
-                                              color: Colors.purple,
-                                              fontWeight: FontWeight.bold,
-                                              fontSize: 13,
-                                            ),
-                                          ),
-                                          SizedBox(height: 4),
-                                          Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.end,
-                                            children: [
-                                              if (userRole == 'admin' ||
-                                                  userRole == 'manager')
-                                                IconButton(
-                                                  icon: Icon(Icons.edit,
-                                                      color: Colors.blue),
-                                                  onPressed: () {
-                                                    _openEditDialog(
-                                                        addedTask[index]);
-                                                  },
+                                            children: <Widget>[
+                                              Text(
+                                                "Title: ${addedTask[index]["title"]}",
+                                                style: TextStyle(
+                                                  color: Colors.grey[700],
+                                                  fontSize: 16,
+                                                  fontWeight: FontWeight.bold,
                                                 ),
+                                              ),
+                                              SizedBox(height: 8),
+                                              Text(
+                                                "Description: ${addedTask[index]["description"]}",
+                                                style: TextStyle(
+                                                  color: Colors.grey[700],
+                                                  fontSize: 13,
+                                                ),
+                                              ),
+                                              SizedBox(height: 4),
+                                              Text(
+                                                "Status: ${addedTask[index]["status"]}",
+                                                style: TextStyle(
+                                                  color: Colors.purple,
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: 13,
+                                                ),
+                                              ),
+                                              SizedBox(height: 4),
+                                              Row(
+                                                mainAxisAlignment:
+                                                MainAxisAlignment.end,
+                                                children: [
+                                                  if (userRole == 'admin' ||
+                                                      userRole == 'manager')
+                                                    IconButton(
+                                                      icon: Icon(Icons.edit,
+                                                          color: Colors.blue),
+                                                      onPressed: () {
+                                                        sendEmail();
+                                                        _openEditDialog(
+                                                            addedTask[index]);
+                                                      },
+                                                    ),
+                                                ],
+                                              ),
                                             ],
                                           ),
-                                        ],
+                                        ),
+                                      ),
+                                    ),
+                                  );
+                                }
+                              } else {
+                                return GestureDetector(
+                                  onTap: () async {
+                                    setState(() {
+                                      selectedTaskIndex = index;
+                                    });
+
+                                    await _showDeleteDialog(
+                                        addedTask[index]["title"]);
+                                  },
+                                  child: Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        vertical: 8, horizontal: 10),
+                                    child: Card(
+                                      color: Colors.grey[100],
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(
+                                            10.0),
+                                      ),
+                                      child: Padding(
+                                        padding: const EdgeInsets.all(12),
+                                        child: Column(
+                                          crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                          children: <Widget>[
+                                            Text(
+                                              "Title: ${addedTask[index]["title"]}",
+                                              style: TextStyle(
+                                                color: Colors.grey[700],
+                                                fontSize: 15,
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                            ),
+                                            SizedBox(height: 6),
+                                            Text(
+                                              "Description: ${addedTask[index]["description"]}",
+                                              style: TextStyle(
+                                                color: Colors.grey[700],
+                                                fontSize: 13,
+                                              ),
+                                            ),
+                                            SizedBox(height: 3),
+                                            Text(
+                                              "Status: ${addedTask[index]["status"]}",
+                                              style: TextStyle(
+                                                  color: Colors.purple,
+                                                  fontWeight: FontWeight.bold),
+                                            ),
+                                            SizedBox(height: 3),
+                                            Row(
+                                              mainAxisAlignment:
+                                              MainAxisAlignment.end,
+                                              children: [
+                                                if (userRole == 'admin' ||
+                                                    userRole == 'manager')
+                                                  IconButton(
+                                                    icon: Icon(Icons.edit,
+                                                        color: Colors.blue),
+                                                    onPressed: () {
+                                                      _openEditDialog(
+                                                          addedTask[index]);
+                                                    },
+                                                  ),
+                                              ],
+                                            ),
+                                          ],
+                                        ),
                                       ),
                                     ),
                                   ),
-                                ),
-                              );
-                            }
-                          } else {
-                            return GestureDetector(
-                              onTap: () async {
-                                setState(() {
-                                  selectedTaskIndex = index;
-                                });
-
-                                await _showDeleteDialog(
-                                    addedTask[index]["title"]);
-                              },
-                              child: Padding(
-                                padding: const EdgeInsets.symmetric(
-                                    vertical: 8, horizontal: 10),
-                                child: Card(
-                                  color: Colors.grey[100],
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(10.0),
-                                  ),
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(12),
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: <Widget>[
-                                        Text(
-                                          "Title: ${addedTask[index]["title"]}",
-                                          style: TextStyle(
-                                            color: Colors.grey[700],
-                                            fontSize: 15,
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                        ),
-                                        SizedBox(height: 6),
-                                        Text(
-                                          "Description: ${addedTask[index]["description"]}",
-                                          style: TextStyle(
-                                            color: Colors.grey[700],
-                                            fontSize: 13,
-                                          ),
-                                        ),
-                                        SizedBox(height: 3),
-                                        Text(
-                                          "Status: ${addedTask[index]["status"]}",
-                                          style: TextStyle(
-                                              color: Colors.purple,
-                                              fontWeight: FontWeight.bold),
-                                        ),
-                                        SizedBox(height: 3),
-                                        Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.end,
-                                          children: [
-                                            if (userRole == 'admin' ||
-                                                userRole == 'manager')
-                                              IconButton(
-                                                icon: Icon(Icons.edit,
-                                                    color: Colors.blue),
-                                                onPressed: () {
-                                                  _openEditDialog(
-                                                      addedTask[index]);
-                                                },
-                                              ),
-                                          ],
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            );
-                          }
-                        },
-                        itemCount: addedTask.length,
-                      ),
-                    ),
-                  ],
-                );
-              }
-            },
-            future: getData(),
-          ),
-        )));
+                                );
+                              }
+                            },
+                            itemCount: addedTask.length,
+                          ),
+                        ),
+                      ],
+                    );
+                  }
+                },
+                future: getData(),
+              ),
+            )));
   }
 
   Future<void> _showDeleteDialog(String taskNameToDelete) async {
@@ -402,14 +440,14 @@ class _MyHomePageState extends State<DeleteTaskScreen> {
                         FirebaseFirestore.instance;
 
                     final CollectionReference redeemCollection =
-                        firestore.collection("Tasks");
+                    firestore.collection("Tasks");
 
                     QuerySnapshot querySnapshot = await redeemCollection.get();
 
                     for (QueryDocumentSnapshot documentSnapshot
-                        in querySnapshot.docs) {
+                    in querySnapshot.docs) {
                       Map<String, dynamic>? userData =
-                          documentSnapshot.data() as Map<String, dynamic>?;
+                      documentSnapshot.data() as Map<String, dynamic>?;
                       if (userData!.containsKey("AddedTasks")) {
                         List<Map<String, dynamic>> updatedRedeemTask = [];
 
@@ -474,11 +512,11 @@ class _MyHomePageState extends State<DeleteTaskScreen> {
         return StatefulBuilder(
           builder: (BuildContext context, StateSetter setState) {
             TextEditingController titleController =
-                TextEditingController(text: taskData['title']);
+            TextEditingController(text: taskData['title']);
             TextEditingController descriptionController =
-                TextEditingController(text: taskData['description']);
+            TextEditingController(text: taskData['description']);
             TextEditingController statusController =
-                TextEditingController(text: taskData['status']);
+            TextEditingController(text: taskData['status']);
 
             return AlertDialog(
               title: const Text('Edit Event'),
@@ -501,6 +539,7 @@ class _MyHomePageState extends State<DeleteTaskScreen> {
                   child: const Text('Save Changes'),
                   onPressed: () {
                     // Implement save logic
+                    sendEmail();
                     _saveChanges(
                       titleController.text,
                       descriptionController.text,
@@ -531,7 +570,7 @@ class _MyHomePageState extends State<DeleteTaskScreen> {
 
     for (QueryDocumentSnapshot documentSnapshot in querySnapshot.docs) {
       Map<String, dynamic>? userData =
-          documentSnapshot.data() as Map<String, dynamic>?;
+      documentSnapshot.data() as Map<String, dynamic>?;
 
       if (userData != null && userData.containsKey("AddedTasks")) {
         await documentSnapshot.reference.update({"AddedTasks": updatedTasks});
@@ -539,11 +578,9 @@ class _MyHomePageState extends State<DeleteTaskScreen> {
     }
   }
 
-  Future<void> _saveChanges(
-    String newTitle,
-    String newDescription,
-    String newStatus,
-  ) async {
+  Future<void> _saveChanges(String newTitle,
+      String newDescription,
+      String newStatus,) async {
     if (selectedTaskIndex != null && selectedTaskIndex! >= 0) {
       // Check the user's role
       if (userRole == 'admin' || userRole == 'manager') {
@@ -558,14 +595,14 @@ class _MyHomePageState extends State<DeleteTaskScreen> {
         // Save changes to Firestore
         final FirebaseFirestore firestore = FirebaseFirestore.instance;
         final CollectionReference tasksCollection =
-            firestore.collection("Tasks");
+        firestore.collection("Tasks");
 
         // Update the document in the "Tasks" collection
         QuerySnapshot querySnapshot = await tasksCollection.get();
 
         for (QueryDocumentSnapshot documentSnapshot in querySnapshot.docs) {
           Map<String, dynamic>? userData =
-              documentSnapshot.data() as Map<String, dynamic>?;
+          documentSnapshot.data() as Map<String, dynamic>?;
 
           if (userData != null && userData.containsKey("AddedTasks")) {
             List<Map<String, dynamic>> updatedTasks = [];
@@ -609,14 +646,7 @@ class _MyHomePageState extends State<DeleteTaskScreen> {
           print(
               "Current User Email: $userEmail"); // Add this line to print the email
 
-          final Email email = Email(
-            body:
-                'Changes have been saved to the task. Check your app for details.',
-            subject: 'Task Updated',
-            recipients: [userEmail],
-          );
 
-          await FlutterEmailSender.send(email);
           print('Email sent successfully');
         } else {
           print("User document not found in Firestore");

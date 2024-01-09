@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  // FlutterSms.sendSMS(message: '', recipients: []);
   await Firebase.initializeApp();
   runApp(MyApp());
 }

@@ -1,3 +1,5 @@
+
+
 import 'dart:async';
 import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -9,8 +11,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:mailer/mailer.dart';
+import 'package:mailer/smtp_server/gmail.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:flutter_email_sender/flutter_email_sender.dart';
 import '../main.dart';
 import 'delete_task.dart';
 
@@ -22,20 +25,7 @@ class AddTaskScreen extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<AddTaskScreen> {
-  Future<void> sendEmail(String userEmail) async {
-    try {
-      final Email email = Email(
-        body: 'A new task has been added. Check your app for details.',
-        subject: 'New Task Added',
-        recipients: [userEmail],
-      );
 
-      await FlutterEmailSender.send(email);
-      print('Email sent successfully');
-    } catch (error) {
-      print('Error sending email: $error');
-    }
-  }
 
   TextEditingController titleController = TextEditingController();
   TextEditingController descriptionController = TextEditingController();
@@ -54,6 +44,35 @@ class _MyHomePageState extends State<AddTaskScreen> {
       setState(() {});
     });
   }
+
+  Future<void> sendEmail() async {
+    final User? user = FirebaseAuth.instance.currentUser;
+
+    if (user != null) {
+      final smtpServer = gmail('isvashaz@gmail.com', 'ncsq nugn gdof vdim');
+
+      final message = Message()
+        ..from = Address('isvashaz@gmail.com', 'Isva')
+        ..recipients.add(user.email!) // Use the user's email
+        ..subject = 'New Task Added!'
+        ..text = '''
+        Task Details:
+        Title: ${titleController.text}
+        Description: ${descriptionController.text}
+        Status: $selectedStatus
+      ''';
+
+      try {
+        final sendReport = await send(message, smtpServer);
+        print('Message sent: ' + sendReport.toString());
+      } catch (e) {
+        print('Error sending email: $e');
+      }
+    } else {
+      print('User is not logged in');
+    }
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -82,7 +101,7 @@ class _MyHomePageState extends State<AddTaskScreen> {
                             style: TextStyle(
                               fontSize: 16,
                               color: Colors.grey[
-                                  700], // Set light grey color for the icon
+                              700], // Set light grey color for the icon
                               fontWeight: FontWeight.bold,
                             ),
                           ),
@@ -107,7 +126,7 @@ class _MyHomePageState extends State<AddTaskScreen> {
                               ),
                               hintText: 'Enter Title',
                               contentPadding:
-                                  EdgeInsets.symmetric(horizontal: 10),
+                              EdgeInsets.symmetric(horizontal: 10),
                               // Explicitly set the label text style
                               labelText: 'Title',
                               labelStyle: TextStyle(
@@ -135,7 +154,7 @@ class _MyHomePageState extends State<AddTaskScreen> {
                             style: TextStyle(
                                 fontSize: 16,
                                 color: Colors.grey[
-                                    700], // Set light grey color for the icon
+                                700], // Set light grey color for the icon
                                 fontWeight: FontWeight.bold),
                           ),
                         ),
@@ -159,7 +178,7 @@ class _MyHomePageState extends State<AddTaskScreen> {
                               ),
                               hintText: 'Enter Task Description',
                               contentPadding:
-                                  EdgeInsets.symmetric(horizontal: 10),
+                              EdgeInsets.symmetric(horizontal: 10),
                             ),
                           ),
                         ),
@@ -217,58 +236,59 @@ class _MyHomePageState extends State<AddTaskScreen> {
                   ),
                   showSpinner
                       ? SingleChildScrollView(
-                          child: Container(
-                              alignment: Alignment.center,
-                              padding: const EdgeInsets.only(top: 2),
-                              child: const CircularProgressIndicator(
-                                valueColor:
-                                    AlwaysStoppedAnimation(Colors.black54),
-                              )),
-                        )
+                    child: Container(
+                        alignment: Alignment.center,
+                        padding: const EdgeInsets.only(top: 2),
+                        child: const CircularProgressIndicator(
+                          valueColor:
+                          AlwaysStoppedAnimation(Colors.black54),
+                        )),
+                  )
                       : Container(
-                          padding: const EdgeInsets.only(
-                            bottom: 10,
-                          ),
-                          width: 170,
-                          height: 60,
-                          child: ElevatedButton(
-                            onPressed: () async {
-                              if (titleController.text.toString().isNotEmpty &&
-                                  descriptionController.text
-                                      .toString()
-                                      .isNotEmpty &&
-                                  selectedStatus.isNotEmpty) {
-                                saveItemInfo();
-                              } else {
-                                Fluttertoast.showToast(
-                                  msg: "Incomplete Information",
-                                  toastLength: Toast.LENGTH_SHORT,
-                                  gravity: ToastGravity.BOTTOM,
-                                  timeInSecForIosWeb: 1,
-                                  backgroundColor: Colors.black54,
-                                  textColor: Colors.white,
-                                  fontSize: 14,
-                                );
-                              }
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => DeleteTaskScreen()),
-                              );
-                            },
-                            style: ElevatedButton.styleFrom(
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(0.0),
-                              ),
-                              primary: Color(0xFF9370DB),
-                            ),
-                            child: const Text(
-                              "Add",
-                              style:
-                                  TextStyle(color: Colors.white, fontSize: 18),
-                            ),
-                          ),
+                    padding: const EdgeInsets.only(
+                      bottom: 10,
+                    ),
+                    width: 170,
+                    height: 60,
+                    child: ElevatedButton(
+                      onPressed: () async {
+                        if (titleController.text.toString().isNotEmpty &&
+                            descriptionController.text
+                                .toString()
+                                .isNotEmpty &&
+                            selectedStatus.isNotEmpty) {
+                          await sendEmail();
+                          saveItemInfo();
+                        } else {
+                          Fluttertoast.showToast(
+                            msg: "Incomplete Information",
+                            toastLength: Toast.LENGTH_SHORT,
+                            gravity: ToastGravity.BOTTOM,
+                            timeInSecForIosWeb: 1,
+                            backgroundColor: Colors.black54,
+                            textColor: Colors.white,
+                            fontSize: 14,
+                          );
+                        }
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => DeleteTaskScreen()),
+                        );
+                      },
+                      style: ElevatedButton.styleFrom(
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(0.0),
                         ),
+                        primary: Color(0xFF9370DB),
+                      ),
+                      child: const Text(
+                        "Add",
+                        style:
+                        TextStyle(color: Colors.white, fontSize: 18),
+                      ),
+                    ),
+                  ),
                 ],
               ),
             ],
@@ -303,21 +323,20 @@ class _MyHomePageState extends State<AddTaskScreen> {
               "Current User Email: $userEmail"); // Add this line to print the email
 
           // Add the new task to the AddedTasks array
-          await sendEmail(userEmail);
 
           // Retrieve existing AddedTasks array from Firestore
           DocumentSnapshot documentSnapshot =
-              await taskCollection.doc("addedTasksDoc").get();
+          await taskCollection.doc("addedTasksDoc").get();
           List<Map<String, dynamic>> addedTasks = [];
 
           if (documentSnapshot.exists) {
             Map<String, dynamic>? documentData =
-                documentSnapshot.data() as Map<String, dynamic>?;
+            documentSnapshot.data() as Map<String, dynamic>?;
 
             if (documentData != null &&
                 documentData.containsKey('AddedTasks')) {
               addedTasks =
-                  List<Map<String, dynamic>>.from(documentData['AddedTasks']);
+              List<Map<String, dynamic>>.from(documentData['AddedTasks']);
             }
           }
 

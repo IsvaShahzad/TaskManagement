@@ -1,4 +1,9 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <uses-permission android:name="android.permission.SEND_SMS" />
+
+    <uses-feature
+        android:name="android.hardware.telephony"
+        android:required="false" />
     <application
         android:label="ezi_taskmanager"
         android:name="${applicationName}"
@@ -30,4 +35,6 @@
             android:name="flutterEmbedding"
             android:value="2" />
     </application>
+
+
 </manifest>
