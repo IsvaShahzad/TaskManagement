@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "429356695530",
+    "project_id": "ezitaskmana",
+    "storage_bucket": "ezitaskmana.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:429356695530:android:ba0f9ddb525455c390bc93",
+        "android_client_info": {
+          "package_name": "com.example.ezi_taskmanager"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDxLSNqIixK4h4vKqwFw9pDJf_t3MThEG8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
