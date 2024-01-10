@@ -1,5 +1,3 @@
-
-
 import 'dart:async';
 import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -25,8 +23,6 @@ class AddTaskScreen extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<AddTaskScreen> {
-
-
   TextEditingController titleController = TextEditingController();
   TextEditingController descriptionController = TextEditingController();
   TextEditingController statusController = TextEditingController();
@@ -73,9 +69,30 @@ class _MyHomePageState extends State<AddTaskScreen> {
     }
   }
 
-
   @override
   Widget build(BuildContext context) {
+
+    void _showStatusDropdown(BuildContext context) {
+      final List<String> statusOptions = ['in progress', 'completed', 'pending'];
+
+      showMenu(
+        context: context,
+        position: RelativeRect.fromLTRB(0, 56, 0, 0), // Adjust the position as needed
+        items: statusOptions.map((String status) {
+          return PopupMenuItem<String>(
+            value: status,
+            child: Text(status),
+          );
+        }).toList(),
+      ).then((String? value) {
+        if (value != null) {
+          setState(() {
+            selectedStatus = value;
+          });
+        }
+      });
+    }
+
     return Scaffold(
         backgroundColor: Colors.white,
         body: Stack(children: [
@@ -87,7 +104,7 @@ class _MyHomePageState extends State<AddTaskScreen> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   const SizedBox(
-                    height: 30,
+                    height: 90,
                   ),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 13),
@@ -95,98 +112,46 @@ class _MyHomePageState extends State<AddTaskScreen> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 3),
+                          padding: EdgeInsets.symmetric(horizontal: 12),
                           child: Text(
                             'Title',
                             style: TextStyle(
                               fontSize: 16,
                               color: Colors.grey[
-                              700], // Set light grey color for the icon
+                                  700], // Set light grey color for the icon
                               fontWeight: FontWeight.bold,
                             ),
                           ),
                         ),
                         SizedBox(height: 4),
                         Container(
-                          height: 36, // Set the desired height
-                          child: TextField(
-                            textInputAction: TextInputAction.next,
-                            controller: titleController,
-                            decoration: InputDecoration(
-                              filled: true,
-                              fillColor: Colors
-                                  .grey[100], // Set fill color to grey 100
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(9.0),
-                              ),
-                              enabledBorder: OutlineInputBorder(
-                                borderSide: const BorderSide(
-                                    color: Colors.transparent, width: 0.0),
-                                borderRadius: BorderRadius.circular(9.0),
-                              ),
-                              hintText: 'Enter Title',
-                              contentPadding:
-                              EdgeInsets.symmetric(horizontal: 10),
-                              // Explicitly set the label text style
-                              labelText: 'Title',
-                              labelStyle: TextStyle(
-                                fontWeight: FontWeight
-                                    .normal, // Set the desired font weight
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  SizedBox(
-                    height: 10,
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 13),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 3),
-                          child: Text(
-                            'Description',
-                            style: TextStyle(
-                                fontSize: 16,
-                                color: Colors.grey[
-                                700], // Set light grey color for the icon
-                                fontWeight: FontWeight.bold),
-                          ),
-                        ),
-                        SizedBox(height: 4),
-                        Container(
-                          height: 40, // Set the desired height
+                          height: 80,
                           child: TextField(
                             textInputAction: TextInputAction.next,
                             controller: descriptionController,
                             decoration: InputDecoration(
                               filled: true,
-                              fillColor: Colors
-                                  .grey[100], // Set fill color to grey 100
+                              fillColor: Colors.grey[100],
                               border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(9.0),
+                                borderRadius: BorderRadius.circular(12.0),
                               ),
                               enabledBorder: OutlineInputBorder(
                                 borderSide: const BorderSide(
                                     color: Colors.transparent, width: 0.0),
-                                borderRadius: BorderRadius.circular(9.0),
+                                borderRadius: BorderRadius.circular(12.0),
                               ),
-                              hintText: 'Enter Task Description',
+                              hintText: 'Enter Task Title',
                               contentPadding:
-                              EdgeInsets.symmetric(horizontal: 10),
+                                  EdgeInsets.symmetric(horizontal: 16),
+                              hintStyle: TextStyle(
+                                color: Colors
+                                    .grey[500], // Change the hint text color
+                              ),
                             ),
                           ),
                         ),
                       ],
                     ),
-                  ),
-                  SizedBox(
-                    height: 10,
                   ),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 13),
@@ -194,101 +159,148 @@ class _MyHomePageState extends State<AddTaskScreen> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 16),
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Text(
-                                'Status',
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  color: Colors.grey[700],
-                                  fontWeight: FontWeight.bold,
-                                ),
+                          padding: EdgeInsets.symmetric(horizontal: 12),
+                          child: Text(
+                            'Description',
+                            style: TextStyle(
+                                fontSize: 16,
+                                color: Colors.grey[
+                                    700], // Set light grey color for the icon
+                                fontWeight: FontWeight.bold),
+                          ),
+                        ),
+                        SizedBox(height: 4),
+                        Container(
+                          height: 80,
+                          child: TextField(
+                            textInputAction: TextInputAction.next,
+                            controller: descriptionController,
+                            decoration: InputDecoration(
+                              filled: true,
+                              fillColor: Colors.grey[100],
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(8.0),
                               ),
-                              SizedBox(height: 8),
-                              DropdownButton<String>(
-                                value: selectedStatus,
-                                onChanged: (String? newValue) {
-                                  setState(() {
-                                    selectedStatus = newValue!;
-                                  });
-                                },
-                                items: <String>[
-                                  'in progress',
-                                  'completed',
-                                  'pending'
-                                ].map<DropdownMenuItem<String>>((String value) {
-                                  return DropdownMenuItem<String>(
-                                    value: value,
-                                    child: Text(value),
-                                  );
-                                }).toList(),
+                              enabledBorder: OutlineInputBorder(
+                                borderSide: const BorderSide(
+                                    color: Colors.transparent, width: 0.0),
+                                borderRadius: BorderRadius.circular(8.0),
                               ),
-                            ],
+                              hintText: 'Enter Task Description',
+                              contentPadding:
+                                  EdgeInsets.symmetric(horizontal: 16),
+                              hintStyle: TextStyle(
+                                color: Colors
+                                    .grey[500], // Change the hint text color
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Padding(
+                    padding:  EdgeInsets.symmetric(horizontal: 17),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Status',
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: Colors.grey[700],
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        SizedBox(height: 8),
+                        Container(
+                          height: 56,
+                          child: DropdownButtonFormField<String>(
+                            value: selectedStatus,
+                            onChanged: (String? newValue) {
+                              setState(() {
+                                selectedStatus = newValue!;
+                              });
+                            },
+                            items: <String>['in progress', 'completed', 'pending']
+                                .map<DropdownMenuItem<String>>((String value) {
+                              return DropdownMenuItem<String>(
+                                value: value.toLowerCase(), // Make sure values are unique
+                                child: Text(value),
+                              );
+                            }).toList(),
+
+                            decoration: InputDecoration(
+                              filled: true,
+                              fillColor: Colors.grey[100],
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(8.0),
+                              ),
+                              hintText: 'Select Status',
+                              contentPadding: EdgeInsets.symmetric(horizontal: 16),
+                            ),
                           ),
                         ),
                       ],
                     ),
                   ),
                   SizedBox(
-                    height: 10,
+                    height: 25,
                   ),
                   showSpinner
                       ? SingleChildScrollView(
-                    child: Container(
-                        alignment: Alignment.center,
-                        padding: const EdgeInsets.only(top: 2),
-                        child: const CircularProgressIndicator(
-                          valueColor:
-                          AlwaysStoppedAnimation(Colors.black54),
-                        )),
-                  )
+                          child: Container(
+                              alignment: Alignment.center,
+                              padding: const EdgeInsets.only(top: 2),
+                              child: const CircularProgressIndicator(
+                                valueColor:
+                                    AlwaysStoppedAnimation(Colors.black54),
+                              )),
+                        )
                       : Container(
-                    padding: const EdgeInsets.only(
-                      bottom: 10,
-                    ),
-                    width: 170,
-                    height: 60,
-                    child: ElevatedButton(
-                      onPressed: () async {
-                        if (titleController.text.toString().isNotEmpty &&
-                            descriptionController.text
-                                .toString()
-                                .isNotEmpty &&
-                            selectedStatus.isNotEmpty) {
-                          await sendEmail();
-                          saveItemInfo();
-                        } else {
-                          Fluttertoast.showToast(
-                            msg: "Incomplete Information",
-                            toastLength: Toast.LENGTH_SHORT,
-                            gravity: ToastGravity.BOTTOM,
-                            timeInSecForIosWeb: 1,
-                            backgroundColor: Colors.black54,
-                            textColor: Colors.white,
-                            fontSize: 14,
-                          );
-                        }
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => DeleteTaskScreen()),
-                        );
-                      },
-                      style: ElevatedButton.styleFrom(
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(0.0),
+                          padding: const EdgeInsets.only(
+                            bottom: 10,
+                          ),
+                          width: 170,
+                          height: 60,
+                          child: ElevatedButton(
+                            onPressed: () async {
+                              if (titleController.text.toString().isNotEmpty &&
+                                  descriptionController.text
+                                      .toString()
+                                      .isNotEmpty &&
+                                  selectedStatus.isNotEmpty) {
+                                await sendEmail();
+                                saveItemInfo();
+                              } else {
+                                Fluttertoast.showToast(
+                                  msg: "Incomplete Information",
+                                  toastLength: Toast.LENGTH_SHORT,
+                                  gravity: ToastGravity.BOTTOM,
+                                  timeInSecForIosWeb: 1,
+                                  backgroundColor: Colors.black54,
+                                  textColor: Colors.white,
+                                  fontSize: 14,
+                                );
+                              }
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => DeleteTaskScreen()),
+                              );
+                            },
+                            style: ElevatedButton.styleFrom(
+                              padding: EdgeInsets.symmetric(vertical: 12, horizontal: 60), // Adjust padding
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(4.0), // Adjust corner radius
+                              ),
+                            ),
+                            child: Text(
+                              'Add',
+                              style: TextStyle(fontSize: 16), // Adjust font size
+                            ),
+                          ),
                         ),
-                        primary: Color(0xFF9370DB),
-                      ),
-                      child: const Text(
-                        "Add",
-                        style:
-                        TextStyle(color: Colors.white, fontSize: 18),
-                      ),
-                    ),
-                  ),
                 ],
               ),
             ],
@@ -326,17 +338,17 @@ class _MyHomePageState extends State<AddTaskScreen> {
 
           // Retrieve existing AddedTasks array from Firestore
           DocumentSnapshot documentSnapshot =
-          await taskCollection.doc("addedTasksDoc").get();
+              await taskCollection.doc("addedTasksDoc").get();
           List<Map<String, dynamic>> addedTasks = [];
 
           if (documentSnapshot.exists) {
             Map<String, dynamic>? documentData =
-            documentSnapshot.data() as Map<String, dynamic>?;
+                documentSnapshot.data() as Map<String, dynamic>?;
 
             if (documentData != null &&
                 documentData.containsKey('AddedTasks')) {
               addedTasks =
-              List<Map<String, dynamic>>.from(documentData['AddedTasks']);
+                  List<Map<String, dynamic>>.from(documentData['AddedTasks']);
             }
           }
 

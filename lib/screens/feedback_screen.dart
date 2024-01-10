@@ -35,7 +35,6 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-
       body: SingleChildScrollView(
         child: Padding(
           padding: EdgeInsets.symmetric(horizontal: 18),
@@ -44,23 +43,76 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
+                Text(
+                  'Give us your valued feedback',
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 21,
+                    color: Colors.purple[700], // Change text color
+                  ),
+                ),
+                SizedBox(
+                  height: 20,
+                ),
                 TextField(
                   controller: nameController,
-                  decoration: InputDecoration(labelText: 'Your Name'),
+                  decoration: InputDecoration(
+                    labelText: 'Your Name',
+                    border: InputBorder.none, // No border
+                    enabledBorder: UnderlineInputBorder(
+                      borderSide: BorderSide(color: Colors.transparent),
+                    ),
+                    focusedBorder: UnderlineInputBorder(
+                      borderSide: BorderSide(color: Colors.transparent),
+                    ),
+                    filled: true,
+                    fillColor: Colors.grey[100],
+                    labelStyle: TextStyle(
+                      color: Colors
+                          .grey[500], // Change the color of the label text
+                    ), // Add background color
+                  ),
                 ),
-                SizedBox(height: 16),
+                SizedBox(height: 10),
                 TextField(
                   controller: emailController,
-                  decoration: InputDecoration(labelText: 'Your Email'),
+                  decoration: InputDecoration(
+                    labelText: 'Your Email',
+                    border: InputBorder.none, // No border
+                    enabledBorder: UnderlineInputBorder(
+                      borderSide: BorderSide(color: Colors.transparent),
+                    ),
+                    focusedBorder: UnderlineInputBorder(
+                      borderSide: BorderSide(color: Colors.transparent),
+                    ),
+                    filled: true,
+                    fillColor: Colors.grey[100],
+                    labelStyle: TextStyle(
+                      color: Colors
+                          .grey[500], // Change the color of the label text
+                    ),
+                  ),
                   keyboardType: TextInputType.emailAddress,
                 ),
-                SizedBox(height: 16),
+                SizedBox(height: 10),
                 TextField(
                   controller: feedbackController,
                   decoration: InputDecoration(
                     labelText: 'Feedback',
-
-                    alignLabelWithHint: true, // Align label text with the start
+                    border: InputBorder.none, // No border
+                    enabledBorder: UnderlineInputBorder(
+                      borderSide: BorderSide(color: Colors.transparent),
+                    ),
+                    focusedBorder: UnderlineInputBorder(
+                      borderSide: BorderSide(color: Colors.transparent),
+                    ),
+                    filled: true,
+                    fillColor: Colors.grey[100],
+                    labelStyle: TextStyle(
+                      color: Colors
+                          .grey[500], // Change the color of the label text
+                    ),
+                    alignLabelWithHint: true,
                   ),
                   maxLines: 3,
                 ),
@@ -107,6 +159,7 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
                           content: Text('Feedback submitted successfully'),
+                          backgroundColor: Colors.blue, // Change snackbar color
                         ),
                       );
                     } catch (error) {
@@ -114,11 +167,23 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
                           content: Text('Error occurred. Please try again.'),
+                          backgroundColor: Colors.red, // Change snackbar color
                         ),
                       );
                     }
                   },
-                  child: Text('Submit Feedback'),
+                  style: ElevatedButton.styleFrom(
+                    padding: EdgeInsets.symmetric(
+                        vertical: 12, horizontal: 60), // Adjust padding
+                    shape: RoundedRectangleBorder(
+                      borderRadius:
+                          BorderRadius.circular(4.0), // Adjust corner radius
+                    ),
+                  ),
+                  child: Text(
+                    'Submit Feedback',
+                    style: TextStyle(fontSize: 16), // Adjust font size
+                  ),
                 ),
               ],
             ),

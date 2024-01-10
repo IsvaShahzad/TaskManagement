@@ -112,7 +112,7 @@ class _MyHomePageState extends State<DeleteTaskScreen> {
       final smtpServer = gmail('isvashaz@gmail.com', 'ncsq nugn gdof vdim');
 
       final message = Message()
-        ..from = Address('isvashaz@gmail.com', 'Isva')
+        ..from = Address('isvashaz@gmail.com', 'EZI Task Manager')
         ..recipients.add(user.email!) // Use the user's email
         ..subject = 'Task Updated!'
         ..text = '''
@@ -262,62 +262,63 @@ class _MyHomePageState extends State<DeleteTaskScreen> {
                                         selectedTaskIndex = index;
                                       });
 
-                                      await _showDeleteDialog(
-                                          addedTask[index]["title"]);
+                                      await _showDeleteDialog(addedTask[index]["title"]);
                                     },
                                     child: Padding(
-                                      padding: const EdgeInsets.symmetric(
-                                          vertical: 8, horizontal: 10),
-                                      child: Card(
-                                        color: Colors.grey[200],
-                                        child: Padding(
-                                          padding: const EdgeInsets.all(10),
-                                          child: Column(
-                                            crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                            children: <Widget>[
-                                              Text(
-                                                "Title: ${addedTask[index]["title"]}",
-                                                style: TextStyle(
-                                                  color: Colors.grey[700],
-                                                  fontSize: 16,
-                                                  fontWeight: FontWeight.bold,
-                                                ),
-                                              ),
-                                              SizedBox(height: 8),
-                                              Text(
-                                                "Description: ${addedTask[index]["description"]}",
-                                                style: TextStyle(
-                                                  color: Colors.grey[700],
-                                                  fontSize: 13,
-                                                ),
-                                              ),
-                                              SizedBox(height: 4),
-                                              Text(
-                                                "Status: ${addedTask[index]["status"]}",
-                                                style: TextStyle(
-                                                  color: Colors.purple,
-                                                  fontWeight: FontWeight.bold,
-                                                  fontSize: 13,
-                                                ),
-                                              ),
-                                              SizedBox(height: 4),
-                                              Row(
-                                                mainAxisAlignment:
-                                                MainAxisAlignment.end,
-                                                children: [
-                                                  if (userRole == 'admin' ||
-                                                      userRole == 'manager')
-                                                    IconButton(
-                                                      icon: Icon(Icons.edit,
-                                                          color: Colors.blue),
-                                                      onPressed: () {
-                                                        sendEmail();
-                                                        _openEditDialog(
-                                                            addedTask[index]);
-                                                      },
+                                      padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 10),
+                                      child: AspectRatio(
+                                        aspectRatio: 2.5, // Adjust the aspect ratio as needed
+                                        child: Card(
+                                          color: Colors.grey[200],
+                                          child: Stack(
+                                            children: [
+                                              Padding(
+                                                padding: const EdgeInsets.all(10),
+                                                child: Column(
+                                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                                  children: <Widget>[
+                                                    Row(
+                                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                      children: [
+                                                        Text(
+                                                          "Title: ${addedTask[index]["title"]}",
+                                                          style: TextStyle(
+                                                            color: Colors.grey[700],
+                                                            fontSize: 16,
+                                                            fontWeight: FontWeight.bold,
+                                                          ),
+                                                        ),
+                                                        // Keep the status text here
+                                                      ],
                                                     ),
-                                                ],
+                                                    SizedBox(height: 8),
+                                                    Text(
+                                                      "Description: ${addedTask[index]["description"]}",
+                                                      style: TextStyle(
+                                                        color: Colors.grey[700],
+                                                        fontSize: 13,
+                                                      ),
+                                                    ),
+                                                    SizedBox(height: 4),
+                                                    Text(
+                                                      "Status: ${addedTask[index]["status"]}",
+                                                      style: TextStyle(
+                                                        color: Colors.purple,
+                                                        fontWeight: FontWeight.bold,
+                                                        fontSize: 13,
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                              Align(
+                                                alignment: Alignment.topRight,
+                                                child: IconButton(
+                                                  icon: Icon(Icons.edit, color: Colors.red[700]),
+                                                  onPressed: () {
+                                                    _openEditDialog(addedTask[index]);
+                                                  },
+                                                ),
                                               ),
                                             ],
                                           ),
@@ -333,63 +334,63 @@ class _MyHomePageState extends State<DeleteTaskScreen> {
                                       selectedTaskIndex = index;
                                     });
 
-                                    await _showDeleteDialog(
-                                        addedTask[index]["title"]);
+                                    await _showDeleteDialog(addedTask[index]["title"]);
                                   },
                                   child: Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                        vertical: 8, horizontal: 10),
-                                    child: Card(
-                                      color: Colors.grey[100],
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(
-                                            10.0),
-                                      ),
-                                      child: Padding(
-                                        padding: const EdgeInsets.all(12),
-                                        child: Column(
-                                          crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                          children: <Widget>[
-                                            Text(
-                                              "Title: ${addedTask[index]["title"]}",
-                                              style: TextStyle(
-                                                color: Colors.grey[700],
-                                                fontSize: 15,
-                                                fontWeight: FontWeight.bold,
-                                              ),
-                                            ),
-                                            SizedBox(height: 6),
-                                            Text(
-                                              "Description: ${addedTask[index]["description"]}",
-                                              style: TextStyle(
-                                                color: Colors.grey[700],
-                                                fontSize: 13,
-                                              ),
-                                            ),
-                                            SizedBox(height: 3),
-                                            Text(
-                                              "Status: ${addedTask[index]["status"]}",
-                                              style: TextStyle(
-                                                  color: Colors.purple,
-                                                  fontWeight: FontWeight.bold),
-                                            ),
-                                            SizedBox(height: 3),
-                                            Row(
-                                              mainAxisAlignment:
-                                              MainAxisAlignment.end,
-                                              children: [
-                                                if (userRole == 'admin' ||
-                                                    userRole == 'manager')
-                                                  IconButton(
-                                                    icon: Icon(Icons.edit,
-                                                        color: Colors.blue),
-                                                    onPressed: () {
-                                                      _openEditDialog(
-                                                          addedTask[index]);
-                                                    },
+                                    padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 10),
+                                    child: AspectRatio(
+                                      aspectRatio: 2.5, // Adjust the aspect ratio as needed
+                                      child: Card(
+                                        color: Colors.grey[200],
+                                        child: Stack(
+                                          children: [
+                                            Padding(
+                                              padding: const EdgeInsets.all(10),
+                                              child: Column(
+                                                crossAxisAlignment: CrossAxisAlignment.start,
+                                                children: <Widget>[
+                                                  Row(
+                                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                    children: [
+                                                      Text(
+                                                        "Title: ${addedTask[index]["title"]}",
+                                                        style: TextStyle(
+                                                          color: Colors.grey[700],
+                                                          fontSize: 16,
+                                                          fontWeight: FontWeight.bold,
+                                                        ),
+                                                      ),
+                                                      // Keep the status text here
+                                                    ],
                                                   ),
-                                              ],
+                                                  SizedBox(height: 8),
+                                                  Text(
+                                                    "Description: ${addedTask[index]["description"]}",
+                                                    style: TextStyle(
+                                                      color: Colors.grey[700],
+                                                      fontSize: 13,
+                                                    ),
+                                                  ),
+                                                  SizedBox(height: 4),
+                                                  Text(
+                                                    "Status: ${addedTask[index]["status"]}",
+                                                    style: TextStyle(
+                                                      color: Colors.purple,
+                                                      fontWeight: FontWeight.bold,
+                                                      fontSize: 13,
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                            Align(
+                                              alignment: Alignment.topRight,
+                                              child: IconButton(
+                                                icon: Icon(Icons.edit, color: Colors.red[700]),
+                                                onPressed: () {
+                                                  _openEditDialog(addedTask[index]);
+                                                },
+                                              ),
                                             ),
                                           ],
                                         ),

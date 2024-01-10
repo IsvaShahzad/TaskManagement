@@ -1,4 +1,5 @@
 
+import 'package:ezi_taskmanager/screens/feedback_screen.dart';
 import 'package:ezi_taskmanager/screens/splash_screen.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
