@@ -328,6 +328,7 @@ class _MyHomePageState extends State<DeleteTaskScreen> {
                                   );
                                 }
                               } else {
+// Inside your ListView.builder
                                 return GestureDetector(
                                   onTap: () async {
                                     setState(() {
@@ -339,7 +340,7 @@ class _MyHomePageState extends State<DeleteTaskScreen> {
                                   child: Padding(
                                     padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 10),
                                     child: AspectRatio(
-                                      aspectRatio: 2.5, // Adjust the aspect ratio as needed
+                                      aspectRatio: 2.5,
                                       child: Card(
                                         color: Colors.grey[200],
                                         child: Stack(
@@ -385,12 +386,14 @@ class _MyHomePageState extends State<DeleteTaskScreen> {
                                             ),
                                             Align(
                                               alignment: Alignment.topRight,
-                                              child: IconButton(
+                                              child: userRole == 'admin' || userRole == 'manager'
+                                                  ? IconButton(
                                                 icon: Icon(Icons.edit, color: Colors.red[700]),
                                                 onPressed: () {
                                                   _openEditDialog(addedTask[index]);
                                                 },
-                                              ),
+                                              )
+                                                  : Container(), // Empty container if the user is not admin or manager
                                             ),
                                           ],
                                         ),
